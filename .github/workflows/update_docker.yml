@@ -20,6 +20,9 @@ jobs:
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
+    - name: add safe directory
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "git config --global --add safe.directory ${{ secrets.WORK_DIR }}"
+
     - name: connect and pull
       run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
 
@@ -28,3 +31,4 @@ jobs:
 
     - name: cleanup
       run: rm -rf ~/.ssh
+
