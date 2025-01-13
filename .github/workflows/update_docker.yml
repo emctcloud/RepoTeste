@@ -22,4 +22,6 @@ jobs:
         script: |
           cd /home/ubuntu/RepoTeste/RepoTeste
           ./update_docker.sh
+        port: 22
+        debug: true
 
