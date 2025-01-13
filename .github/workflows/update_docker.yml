@@ -20,6 +20,6 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          cd /home/ubuntu/
+          cd /home/ubuntu/RepoTeste/RepoTeste
           ./update_docker.sh
 
