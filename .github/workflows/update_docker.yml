@@ -1,0 +1,25 @@
+name: Update Docker
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: SSH and run update script
+      uses: appleboy/ssh-action@v0.1.4
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /home/ubuntu/
+          ./update_docker.sh
+
