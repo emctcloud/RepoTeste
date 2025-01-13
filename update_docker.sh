@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Navegar para o diretório do repositório
-cd /root/RepoTeste/RepoTeste || { echo "Falha ao navegar para o diretório do repositório"; exit 1; }
+cd /home/ubuntu/RepoTeste/RepoTeste || { echo "Falha ao navegar para o diretório do repositório"; exit 1; }
 
 # Puxar as últimas alterações do repositório
 git pull origin main || { echo "Falha ao puxar as últimas alterações"; exit 1; }
