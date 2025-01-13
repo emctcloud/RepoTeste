@@ -21,10 +21,10 @@ jobs:
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
     - name: add safe directory
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "git config --global --add safe.directory ${{ secrets.WORK_DIR }}"
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "git config --global --add safe.directory /home/ubuntu/RepoTeste/RepoTeste"
 
     - name: connect and pull
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /home/ubuntu/RepoTeste/RepoTeste && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
 
     - name: run update script
       run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /home/ubuntu/RepoTeste/RepoTeste && ./update_docker.sh"
