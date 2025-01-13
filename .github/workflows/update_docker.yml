@@ -24,4 +24,6 @@ jobs:
           ./update_docker.sh
         port: 22
         debug: true
+        use_insecure_cipher: true
+        timeout: '30s'
 
