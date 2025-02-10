@@ -24,7 +24,6 @@ jobs:
     needs: tests
     outputs:
       image: ${{ steps.define_image.outputs.image }}
-
     env:
       REGISTRY_URL: 865522842129.dkr.ecr.us-east-2.amazonaws.com
       ECR_REPOSITORY: hml-repoteste
@@ -46,6 +45,10 @@ jobs:
 
       - name: ECR Login (via AWS Actions)
         uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Login to ECR manually (in case automatic login fails)
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $REGISTRY_URL
 
       - name: Define Docker image
         id: define_image
