@@ -21,7 +21,7 @@ spec:
         eks.amazonaws.com/nodegroup: hml
       containers:
       - name: hml-repoteste
-        image: 865522842129.dkr.ecr.us-east-2.amazonaws.com/hml-repoteste:latest
+        image: 865522842129.dkr.ecr.us-east-2.amazonaws.com/hml-repoteste:7ca27d8260dbb40ccb34b3bf58a1274b5cd29386
         ports:
         - containerPort: 3000
         resources:
