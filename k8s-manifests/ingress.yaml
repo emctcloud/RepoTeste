@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:865522842129:certificate/08c16e4a-06a6-4fad-8a94-9c091289ac16
+    alb.ingress.kubernetes.io/group.name: 'api-2'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/subnets: 'subnet-07fe432340db945cf,subnet-097020752368e1408,subnet-05189ab2cbbdad689,subnet-09ed1d79a65a3c619'
+    alb.ingress.kubernetes.io/target-type: ip
+  name: hml-repoteste
+  namespace: hml
+spec:
+  ingressClassName: alb
+  rules:
+  - host: hml-repoteste.kxccloud.com.br
+    http:
+      paths:
+      - backend:
+          service:
+            name: hml-repoteste
+            port:
+              number: 80
+        path: /
+        pathType: Prefix

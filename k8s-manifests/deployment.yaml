@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hml-repoteste 
+  namespace: hml
+  labels:
+    app: hml-repoteste
+  annotations:
+    deployTimestamp: "{{ now | date '2025-02-07 17:39:05' }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hml-repoteste
+  template:
+    metadata:
+      labels:
+        app: hml-repoteste
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: hml
+      containers:
+      - name: hml-repoteste
+        image: 865522842129.dkr.ecr.us-east-2.amazonaws.com/hml-repoteste:latest
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+               
+      
+
+
+
+

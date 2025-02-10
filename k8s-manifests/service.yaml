@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: hml-repoteste 
+  namespace: hml
+  labels:
+    app: hml-repoteste
+spec:
+  ports:
+  - port: 80
+    targetPort: 3333
+    protocol: TCP
+  selector:
+    app: hml-repoteste

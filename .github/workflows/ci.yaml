@@ -1,0 +1,100 @@
+name: HML - REPOTESTE
+
+on:
+  push:
+    branches:
+      - KXC-Teste-hml
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install kubeval
+        run: |
+          curl -sL https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz | tar xz
+          sudo mv kubeval /usr/local/bin/
+
+      - name: Validate Kubernetes manifests
+        run: kubeval k8s-manifests/deployment.yaml
+
+  build-and-push:
+    needs: tests
+    outputs:
+      image: ${{ steps.define_image.outputs.image }}
+
+    env:
+      REGISTRY_URL: 865522842129.dkr.ecr.us-east-2.amazonaws.com
+      ECR_REPOSITORY: hml-repoteste
+      IMAGE_TAG: ${{ github.sha }}
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_EKS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_EKS_SECRET_ACCESS_KEY }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: QEMU Setup
+        uses: docker/setup-qemu-action@v2
+
+      - name: Docker Buildx Setup
+        uses: docker/setup-buildx-action@v2
+
+      - name: ECR Login (via AWS Actions)
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Define Docker image
+        id: define_image
+        run: |
+          IMAGE=$REGISTRY_URL/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          echo "::set-output name=image::$IMAGE"
+          echo "Docker image defined as: $IMAGE"
+
+      - name: Build and push image to Amazon ECR
+        run: |
+          docker build -t $IMAGE .
+          docker push $IMAGE
+
+  update-k8s-manifest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: build-and-push
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Debug Image Variable
+        run: |
+          echo "Image from build-and-push: ${{ needs.build-and-push.outputs.image }}"
+
+      - name: Update Kubernetes manifest with new image
+        run: |
+          IMAGE=${{ needs.build-and-push.outputs.image }}
+          echo "Updating manifest with image: $IMAGE"
+          sed -i "s|\(image:\s*\).*|\1$IMAGE|" k8s-manifests/deployment.yaml
+
+      - name: Display updated deployment.yaml
+        run: cat k8s-manifests/deployment.yaml
+
+      - name: Check if changes exist in the deployment.yaml
+        run: |
+          if git diff --quiet k8s-manifests/deployment.yaml; then
+            echo "No changes detected in deployment.yaml"
+            exit 0
+          fi
+
+      - name: Commit changes to deployment.yaml
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add k8s-manifests/deployment.yaml
+          git commit -m "Update image to ${{ needs.build-and-push.outputs.image }}"
+          git push origin ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
